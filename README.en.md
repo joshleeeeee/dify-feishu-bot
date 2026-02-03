@@ -99,7 +99,7 @@ Before you begin, make sure you have:
 ### Step 1: Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/dify-feishu-bot.git
+git clone https://github.com/joshleeeeee/dify-feishu-bot.git
 cd dify-feishu-bot
 ```
 

@@ -99,7 +99,7 @@ Dify Feishu Bot 是一个开源项目，让你可以轻松地将 [Dify](https://
 ### 第一步：克隆项目
 
 ```bash
-git clone https://github.com/your-username/dify-feishu-bot.git
+git clone https://github.com/joshleeeeee/dify-feishu-bot.git
 cd dify-feishu-bot
 ```
 
