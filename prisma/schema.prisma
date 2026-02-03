@@ -1,0 +1,38 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// 会话记录
+model Conversation {
+  id                  String    @id @default(cuid())
+  feishuUserId        String    @map("feishu_user_id")
+  feishuUserName      String?   @map("feishu_user_name")
+  agentId             String    @map("agent_id")
+  difyConversationId  String?   @map("dify_conversation_id")
+  status              String    @default("active") // active, closed
+  createdAt           DateTime  @default(now()) @map("created_at")
+  lastActiveAt        DateTime  @default(now()) @map("last_active_at")
+  messages            Message[]
+
+  @@map("conversations")
+}
+
+// 消息记录
+model Message {
+  id              String       @id @default(cuid())
+  conversationId  String       @map("conversation_id")
+  conversation    Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  role            String       // user, assistant
+  content         String
+  createdAt       DateTime     @default(now()) @map("created_at")
+
+  @@map("messages")
+}
