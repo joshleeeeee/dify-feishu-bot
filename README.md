@@ -2,46 +2,46 @@
 
 # 🤖 Dify Feishu Bot
 
-**Seamlessly integrate Dify AI into Feishu (Lark) for intelligent conversations**
+**将 Dify AI 能力无缝接入飞书，打造专属智能助手**
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Node.js](https://img.shields.io/badge/node-%3E%3D18-brightgreen.svg)](https://nodejs.org/)
 [![Next.js](https://img.shields.io/badge/Next.js-15-black.svg)](https://nextjs.org/)
 
-**English** | [中文](./README.zh-CN.md)
+[English](./README.en.md) | **中文**
 
 </div>
 
 ---
 
-## 📖 About
+## 📖 项目介绍
 
-Dify Feishu Bot is an open-source project that enables seamless integration between [Dify](https://dify.ai/) AI capabilities and Feishu (Lark) messenger. With simple configuration, your Feishu users can have natural conversations with Dify-powered AI agents.
+Dify Feishu Bot 是一个开源项目，让你可以轻松地将 [Dify](https://dify.ai/) 的 AI 能力集成到飞书中。通过简单的配置，你的飞书用户就可以与 Dify 智能体进行自然语言对话。
 
-### 🎯 Use Cases
+### 🎯 适用场景
 
-- 🏢 Enterprise internal AI assistant / Knowledge base Q&A
-- 📚 Document-based AI helper
-- 🤝 Team collaboration AI tools
-- 🔧 Custom workflow automation
+- 🏢 企业内部智能客服 / 知识库问答
+- 📚 基于文档的 AI 助手
+- 🤝 团队协作 AI 工具
+- 🔧 自定义工作流自动化
 
-### 📸 Screenshots
+### 📸 界面预览
 
 <div align="center">
 
-**Dashboard - System Overview & Quick Start Guide**
+**仪表盘 - 系统概览与快速入门**
 
 ![Dashboard](./docs/screenshots/dashboard.png)
 
-**Feishu Configuration - WebSocket Long Connection Mode**
+**飞书配置 - WebSocket 长连接模式**
 
 ![Feishu Config](./docs/screenshots/feishu-config.png)
 
-**Dify Configuration - API Connection Settings**
+**Dify 配置 - API 连接设置**
 
 ![Dify Config](./docs/screenshots/dify-config.png)
 
-**Agent Management - Multi-Agent Support**
+**智能体管理 - 多智能体配置**
 
 ![Agent Management](./docs/screenshots/agents.png)
 
@@ -49,98 +49,98 @@ Dify Feishu Bot is an open-source project that enables seamless integration betw
 
 ---
 
-## ✨ Key Features
+## ✨ 核心特性
 
-| Feature | Description |
-|---------|-------------|
-| 🔌 **WebSocket Connection** | No public IP, domain, or webhook configuration required |
-| 🤖 **Multi-Agent Support** | Configure multiple AI agents, users can switch freely |
-| 💬 **Session Management** | Automatic context management for multi-turn conversations |
-| ⚙️ **Visual Configuration** | Web admin panel for all configurations |
-| 🔒 **Secure Access** | Token-based admin panel authentication |
-| 📝 **Conversation History** | Complete conversation logs for tracking |
+| 特性 | 描述 |
+|------|------|
+| 🔌 **WebSocket 长连接** | 无需公网 IP、无需域名、无需配置 Webhook |
+| 🤖 **多智能体支持** | 可配置多个 AI 智能体，用户自由切换 |
+| 💬 **会话管理** | 自动管理对话上下文，支持多轮对话 |
+| ⚙️ **可视化配置** | 提供 Web 管理面板，所有配置可视化操作 |
+| 🔒 **安全认证** | 基于 Token 的管理面板访问控制 |
+| 📝 **对话记录** | 保存完整对话历史，便于追溯 |
 
 ---
 
-## 🏗️ Architecture
+## 🏗️ 技术架构
 
 ```
 ┌─────────────────┐     WebSocket      ┌─────────────────┐
-│  Feishu Client  │ ◄─────────────────► │  Dify Feishu Bot │
-└─────────────────┘   Long Connection   └────────┬────────┘
+│   飞书客户端     │ ◄─────────────────► │  Dify Feishu Bot │
+└─────────────────┘     长连接          └────────┬────────┘
                                                  │
                                                  │ HTTP API
                                                  ▼
                                         ┌─────────────────┐
                                         │   Dify Server   │
-                                        │  (Self-hosted)  │
+                                        │   (自部署)       │
                                         └─────────────────┘
 ```
 
-**Tech Stack:**
-- **Runtime**: Node.js 18+
-- **Framework**: Next.js 15 (App Router)
-- **Database**: SQLite + Prisma ORM
-- **Feishu SDK**: @larksuiteoapi/node-sdk
+**技术栈：**
+- **运行时**: Node.js 18+
+- **框架**: Next.js 15 (App Router)
+- **数据库**: SQLite + Prisma ORM
+- **飞书 SDK**: @larksuiteoapi/node-sdk
 - **UI**: React + Tailwind CSS
 
 ---
 
-## 🚀 Quick Start
+## 🚀 快速开始
 
-### Prerequisites
+### 前置要求
 
-Before you begin, make sure you have:
+在开始之前，请确保你已经准备好：
 
-- [x] Node.js 18 or higher
-- [x] A [Feishu Open Platform](https://open.feishu.cn/) application
-- [x] A self-hosted [Dify](https://github.com/langgenius/dify) instance
+- [x] Node.js 18 或更高版本
+- [x] 一个 [飞书开放平台](https://open.feishu.cn/) 应用
+- [x] 一个自部署的 [Dify](https://github.com/langgenius/dify) 实例
 
-### Step 1: Clone the Repository
+### 第一步：克隆项目
 
 ```bash
 git clone https://github.com/your-username/dify-feishu-bot.git
 cd dify-feishu-bot
 ```
 
-### Step 2: Install Dependencies
+### 第二步：安装依赖
 
 ```bash
 npm install
 ```
 
-### Step 3: Initialize Database
+### 第三步：初始化数据库
 
 ```bash
 npx prisma generate
 npx prisma db push
 ```
 
-### Step 4: Configure Environment
+### 第四步：配置环境变量
 
-Copy the example configuration:
+复制示例配置文件：
 
 ```bash
 cp .env.example .env
 ```
 
-Edit `.env` and set your admin token:
+编辑 `.env` 文件，设置管理面板的访问 Token：
 
 ```bash
-# Admin panel access token (change to your own secure token)
+# 管理面板访问 Token（请修改为你自己的安全 Token）
 ADMIN_TOKEN=your-secure-token-here
 
-# Database path (default is fine)
+# 数据库路径（默认即可）
 DATABASE_URL="file:./dev.db"
 ```
 
-### Step 5: Start the Server
+### 第五步：启动服务
 
 ```bash
 npm run dev
 ```
 
-Access the admin panel at:
+服务启动后，访问管理面板进行配置：
 
 ```
 http://localhost:3000/admin?token=your-secure-token-here
@@ -148,118 +148,118 @@ http://localhost:3000/admin?token=your-secure-token-here
 
 ---
 
-## ⚙️ Configuration Guide
+## ⚙️ 详细配置
 
-### 1️⃣ Create Feishu Application
+### 1️⃣ 创建飞书应用
 
-1. Log in to [Feishu Open Platform](https://open.feishu.cn/app)
-2. Click "Create Custom App"
-3. Fill in the app name and description
-4. Get your **App ID** and **App Secret**
+1. 登录 [飞书开放平台](https://open.feishu.cn/app)
+2. 点击「创建企业自建应用」
+3. 填写应用名称和描述
+4. 进入应用，获取 **App ID** 和 **App Secret**
 
-### 2️⃣ Configure Permissions
+### 2️⃣ 配置应用权限
 
-Add these permissions in "Permissions Management":
+在「权限管理」中添加以下权限：
 
-| Permission | Description |
-|------------|-------------|
-| `im:message` | Read and send messages |
-| `im:message:send_as_bot` | Send messages as the bot |
+| 权限 | 说明 |
+|------|------|
+| `im:message` | 获取与发送单聊、群组消息 |
+| `im:message:send_as_bot` | 以应用的身份发送消息 |
 
-### 3️⃣ Enable Long Connection
+### 3️⃣ 启用长连接
 
-In "Event Subscriptions":
+在「事件订阅」页面：
 
-1. Find "Use long connection to receive events"
-2. **Enable** this option
+1. 找到「使用长连接接收事件」选项
+2. **开启** 此功能
 
-> 💡 **Tip**: Long connection mode requires no callback URL - this is the core advantage of this project!
+> 💡 **提示**: 使用长连接模式无需配置回调地址，这是本项目的核心优势！
 
-### 4️⃣ Publish the App
+### 4️⃣ 发布应用
 
-1. Create a version in "Version Management"
-2. Submit for review and publish
+1. 在「版本管理与发布」中创建版本
+2. 提交审核并发布
 
-### 5️⃣ Configure in Admin Panel
+### 5️⃣ 在管理面板中配置
 
-1. **Feishu Config**: Enter App ID and App Secret, click "Start Connection"
-2. **Dify Config**: Enter Dify Base URL and API Key
-3. **Agent Management**: Add at least one agent
-
----
-
-## 💬 Usage
-
-After configuration, users can chat with the bot in Feishu:
-
-### Available Commands
-
-| Command | Description |
-|---------|-------------|
-| `/help` or `帮助` | Show help information |
-| `/agent` or `选择助手` | Switch AI agent |
-| `/new` or `新对话` | Start a new conversation |
-
-### Conversation Flow
-
-1. User finds the bot in Feishu and sends a message
-2. First-time users will be prompted to select an agent (if multiple exist)
-3. After selection, conversation begins
-4. Send `/new` to reset conversation context
+1. **飞书配置**: 填入 App ID 和 App Secret，点击「启动连接」
+2. **Dify 配置**: 填入 Dify 的 Base URL 和 API Key
+3. **智能体管理**: 添加至少一个智能体
 
 ---
 
-## 📁 Project Structure
+## 💬 使用方法
+
+配置完成后，用户可以在飞书中与 Bot 对话：
+
+### 可用命令
+
+| 命令 | 说明 |
+|------|------|
+| `/help` 或 `帮助` | 显示帮助信息 |
+| `/agent` 或 `选择助手` | 切换 AI 智能体 |
+| `/new` 或 `新对话` | 开始新的对话 |
+
+### 对话流程
+
+1. 用户在飞书中找到 Bot 并发送消息
+2. 首次对话会提示选择智能体（如果有多个）
+3. 选择后即可开始对话
+4. 发送 `/new` 可重置对话上下文
+
+---
+
+## 📁 项目结构
 
 ```
 dify-feishu-bot/
 ├── src/
 │   ├── app/
-│   │   ├── admin/              # Admin panel pages
-│   │   │   ├── page.tsx        # Dashboard
-│   │   │   ├── feishu/         # Feishu config
-│   │   │   ├── dify/           # Dify config
-│   │   │   ├── agents/         # Agent management
-│   │   │   └── conversations/  # Conversation logs
-│   │   └── api/admin/          # Admin APIs
-│   ├── components/             # UI components
-│   └── lib/                    # Core logic
-│       ├── feishu.ts           # Feishu SDK wrapper
-│       ├── dify.ts             # Dify API client
-│       ├── config.ts           # Configuration
-│       ├── db.ts               # Database operations
-│       └── cards.ts            # Card message templates
+│   │   ├── admin/              # 管理面板页面
+│   │   │   ├── page.tsx        # 仪表盘
+│   │   │   ├── feishu/         # 飞书配置
+│   │   │   ├── dify/           # Dify 配置
+│   │   │   ├── agents/         # 智能体管理
+│   │   │   └── conversations/  # 会话记录
+│   │   └── api/admin/          # 管理 API
+│   ├── components/             # UI 组件
+│   └── lib/                    # 核心逻辑
+│       ├── feishu.ts           # 飞书 SDK 封装
+│       ├── dify.ts             # Dify API 客户端
+│       ├── config.ts           # 配置管理
+│       ├── db.ts               # 数据库操作
+│       └── cards.ts            # 卡片消息模板
 ├── config/
-│   └── settings.json           # Runtime configuration
+│   └── settings.json           # 运行时配置
 ├── prisma/
-│   └── schema.prisma           # Database schema
-└── .env                        # Environment variables
+│   └── schema.prisma           # 数据库模型
+└── .env                        # 环境变量
 ```
 
 ---
 
-## 🚢 Production Deployment
+## 🚢 生产部署
 
-### Using PM2
+### 使用 PM2 部署
 
 ```bash
-# Build
+# 构建
 npm run build
 
-# Start with PM2
+# 使用 PM2 启动
 pm2 start npm --name "dify-feishu-bot" -- start
 
-# View logs
+# 查看日志
 pm2 logs dify-feishu-bot
 ```
 
-### Using Docker
+### 使用 Docker 部署
 
 ```bash
-# Build image
+# 构建镜像
 docker build -t dify-feishu-bot .
 
-# Run container
+# 运行容器
 docker run -d \
   -p 3000:3000 \
   -e ADMIN_TOKEN=your-token \
@@ -270,54 +270,54 @@ docker run -d \
 
 ---
 
-## ❓ FAQ
+## ❓ 常见问题
 
-### Q: Why WebSocket instead of Webhook?
+### Q: 为什么选择 WebSocket 长连接而不是 Webhook？
 
-**A:** WebSocket long connection mode offers:
-- No public IP or domain required
-- No callback URL configuration
-- No tunneling needed for local development
-- Simpler deployment process
+**A:** WebSocket 长连接模式有以下优势：
+- 无需公网 IP 或域名
+- 无需配置回调 URL
+- 本地开发无需内网穿透
+- 更简单的部署流程
 
-### Q: Does it support group chats?
+### Q: 支持群聊吗？
 
-**A:** Currently only private chats are supported. Group chat support is planned for future releases.
+**A:** 目前仅支持单聊场景。群聊支持计划在后续版本中添加。
 
-### Q: How to update configuration?
+### Q: 如何更新配置？
 
-**A:** Changes in the web admin panel are saved automatically. After modifying Feishu config, click "Start Connection" again.
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome! Please follow these steps:
-
-1. Fork this repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+**A:** 在 Web 管理面板中修改配置后会自动保存。修改飞书配置后需要重新点击「启动连接」。
 
 ---
 
-## 📄 License
+## 🤝 贡献指南
 
-This project is licensed under the [MIT License](LICENSE).
+欢迎贡献代码！请遵循以下步骤：
+
+1. Fork 本仓库
+2. 创建特性分支 (`git checkout -b feature/amazing-feature`)
+3. 提交更改 (`git commit -m 'Add some amazing feature'`)
+4. 推送到分支 (`git push origin feature/amazing-feature`)
+5. 创建 Pull Request
 
 ---
 
-## 🙏 Acknowledgements
+## 📄 开源协议
 
-- [Dify](https://github.com/langgenius/dify) - Powerful LLM application development platform
-- [Feishu Open Platform](https://open.feishu.cn/) - Comprehensive SDK support
-- [Next.js](https://nextjs.org/) - Excellent React full-stack framework
+本项目采用 [MIT 协议](LICENSE) 开源。
+
+---
+
+## 🙏 致谢
+
+- [Dify](https://github.com/langgenius/dify) - 强大的 LLM 应用开发平台
+- [飞书开放平台](https://open.feishu.cn/) - 提供完善的 SDK 支持
+- [Next.js](https://nextjs.org/) - 优秀的 React 全栈框架
 
 ---
 
 <div align="center">
 
-**If this project helps you, please give it a ⭐ Star!**
+**如果这个项目对你有帮助，请给一个 ⭐ Star 支持一下！**
 
 </div>
