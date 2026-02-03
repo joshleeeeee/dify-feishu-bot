@@ -110,14 +110,25 @@ async function handleUserMessage(data: {
 
   console.log(`收到消息: ${text} (来自 ${openId})`);
 
-  // 发送文本消息的辅助函数
-  const sendText = async (content: string) => {
+  // 发送 Markdown 消息（使用卡片渲染）
+  const sendMarkdown = async (content: string) => {
+    const card = {
+      config: {
+        wide_screen_mode: true,
+      },
+      elements: [
+        {
+          tag: 'markdown',
+          content: content,
+        },
+      ],
+    };
     await client.im.message.create({
       params: { receive_id_type: 'open_id' },
       data: {
         receive_id: openId,
-        msg_type: 'text',
-        content: JSON.stringify({ text: content }),
+        msg_type: 'interactive',
+        content: JSON.stringify(card),
       },
     });
   };
@@ -217,7 +228,7 @@ async function handleUserMessage(data: {
 
     const agent = getAgent(conversation.agentId);
     if (!agent) {
-      await sendText('当前智能体配置已失效，请发送 /agent 重新选择');
+      await sendMarkdown('当前智能体配置已失效，请发送 /agent 重新选择');
       return;
     }
 
@@ -251,12 +262,12 @@ async function handleUserMessage(data: {
       content: response.answer,
     });
 
-    await sendText(response.answer);
+    await sendMarkdown(response.answer);
     
   } catch (error) {
     console.error('Error handling message:', error);
     const errorMessage = error instanceof Error ? error.message : '处理消息时出错';
-    await sendText(`❌ ${errorMessage}`);
+    await sendMarkdown(`❌ ${errorMessage}`);
   }
 }
 
