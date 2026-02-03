@@ -48,6 +48,20 @@ export function clearFeishuClient() {
   wsClientInstance = null;
 }
 
+// 消息去重缓存（防止重复处理同一条消息）
+const processedMessages = new Map<string, number>();
+const MESSAGE_CACHE_TTL = 60000; // 1分钟
+
+// 清理过期的消息缓存
+function cleanupMessageCache() {
+  const now = Date.now();
+  for (const [id, timestamp] of processedMessages) {
+    if (now - timestamp > MESSAGE_CACHE_TTL) {
+      processedMessages.delete(id);
+    }
+  }
+}
+
 // 处理用户消息
 async function handleUserMessage(data: {
   sender: { sender_id: { open_id: string }; sender_type?: string };
@@ -59,10 +73,23 @@ async function handleUserMessage(data: {
     chat_id: string;
   };
 }) {
+  const messageId = data.message.message_id;
   const openId = data.sender.sender_id.open_id;
   const messageType = data.message.message_type;
   const chatType = data.message.chat_type;
   const client = getFeishuClient();
+  
+  // 消息去重：检查是否已处理过该消息
+  if (processedMessages.has(messageId)) {
+    console.log(`消息已处理，跳过: ${messageId}`);
+    return;
+  }
+  processedMessages.set(messageId, Date.now());
+  
+  // 定期清理缓存
+  if (processedMessages.size > 100) {
+    cleanupMessageCache();
+  }
   
   // 只处理单聊中的文本消息
   if (chatType !== 'p2p' || messageType !== 'text') {
@@ -123,6 +150,24 @@ async function handleUserMessage(data: {
       await sendCard(buildAgentSelectCard(agents));
     }
     return;
+  }
+
+  // 处理数字选择智能体（1, 2, 3...）
+  const numMatch = text.match(/^(\d+)$/);
+  if (numMatch) {
+    const num = parseInt(numMatch[1], 10);
+    const agents = getAgents();
+    
+    if (num >= 1 && num <= agents.length) {
+      const selectedAgent = agents[num - 1];
+      await closeUserConversations(openId);
+      await createConversation({
+        feishuUserId: openId,
+        agentId: selectedAgent.id,
+      });
+      await sendCard(buildWelcomeCard(selectedAgent.name));
+      return;
+    }
   }
 
   if (lowerText === '/new' || text === '新对话') {
@@ -215,63 +260,6 @@ async function handleUserMessage(data: {
   }
 }
 
-// 处理卡片交互
-async function handleCardAction(data: {
-  open_id: string;
-  action: { value: { action: string; agentId?: string } };
-}) {
-  const openId = data.open_id;
-  const actionType = data.action?.value?.action;
-  const agentId = data.action?.value?.agentId;
-  const client = getFeishuClient();
-
-  console.log(`收到卡片交互: ${actionType} (来自 ${openId})`);
-
-  const sendCard = async (card: object) => {
-    await client.im.message.create({
-      params: { receive_id_type: 'open_id' },
-      data: {
-        receive_id: openId,
-        msg_type: 'interactive',
-        content: JSON.stringify(card),
-      },
-    });
-  };
-
-  switch (actionType) {
-    case 'select_agent': {
-      const agent = getAgent(agentId!);
-      if (!agent) {
-        await sendCard(buildNoAgentCard());
-        break;
-      }
-
-      await closeUserConversations(openId);
-      await createConversation({
-        feishuUserId: openId,
-        agentId: agent.id,
-      });
-
-      await sendCard(buildWelcomeCard(agent.name));
-      break;
-    }
-
-    case 'switch_agent':
-    case 'new_conversation':
-    case 'retry': {
-      const agents = getAgents();
-      if (agents.length === 0) {
-        await sendCard(buildNoAgentCard());
-      } else {
-        await sendCard(buildAgentSelectCard(agents));
-      }
-      break;
-    }
-
-    default:
-      console.log('Unknown action:', actionType);
-  }
-}
 
 // 启动 WebSocket 长连接
 export function startFeishuWebSocket(): lark.WSClient | null {

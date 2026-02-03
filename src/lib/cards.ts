@@ -1,16 +1,13 @@
 import { AgentConfig } from './config';
 
-// 智能体选择卡片
+// 智能体选择卡片（无交互按钮，引导用户发送命令）
 export function buildAgentSelectCard(agents: AgentConfig[]) {
-  const buttons = agents.map(agent => ({
-    tag: 'button',
-    text: {
-      tag: 'plain_text',
-      content: agent.isDefault ? `${agent.name} ⭐` : agent.name,
-    },
-    type: agent.isDefault ? 'primary' : 'default',
-    value: { action: 'select_agent', agentId: agent.id },
-  }));
+  // 生成智能体列表，每个智能体显示序号，用户可以发送序号选择
+  const agentList = agents.map((agent, index) => {
+    const star = agent.isDefault ? ' ⭐' : '';
+    const desc = agent.description ? ` - ${agent.description}` : '';
+    return `**${index + 1}.** ${agent.name}${star}${desc}`;
+  }).join('\n');
 
   return {
     config: {
@@ -28,12 +25,8 @@ export function buildAgentSelectCard(agents: AgentConfig[]) {
         tag: 'div',
         text: {
           tag: 'lark_md',
-          content: '请选择一个 AI 助手开始对话：',
+          content: '请选择一个 AI 助手开始对话：\n\n' + agentList,
         },
-      },
-      {
-        tag: 'action',
-        actions: buttons,
       },
       {
         tag: 'hr',
@@ -43,7 +36,7 @@ export function buildAgentSelectCard(agents: AgentConfig[]) {
         elements: [
           {
             tag: 'plain_text',
-            content: '💡 发送 /new 可以开始新对话',
+            content: '💡 发送数字序号（如 1、2）选择助手，发送 /new 开始新对话',
           },
         ],
       },
@@ -51,7 +44,7 @@ export function buildAgentSelectCard(agents: AgentConfig[]) {
   };
 }
 
-// 欢迎卡片
+// 欢迎卡片（无交互按钮）
 export function buildWelcomeCard(agentName: string) {
   return {
     config: {
@@ -76,25 +69,11 @@ export function buildWelcomeCard(agentName: string) {
         tag: 'hr',
       },
       {
-        tag: 'action',
-        actions: [
+        tag: 'note',
+        elements: [
           {
-            tag: 'button',
-            text: {
-              tag: 'plain_text',
-              content: '🔄 切换助手',
-            },
-            type: 'default',
-            value: { action: 'switch_agent' },
-          },
-          {
-            tag: 'button',
-            text: {
-              tag: 'plain_text',
-              content: '🆕 新对话',
-            },
-            type: 'default',
-            value: { action: 'new_conversation' },
+            tag: 'plain_text',
+            content: '💡 发送 /agent 切换助手，发送 /new 开始新对话',
           },
         ],
       },
@@ -133,7 +112,7 @@ export function buildHelpCard() {
   };
 }
 
-// 错误卡片
+// 错误卡片（无交互按钮）
 export function buildErrorCard(errorMessage: string) {
   return {
     config: {
@@ -155,16 +134,11 @@ export function buildErrorCard(errorMessage: string) {
         },
       },
       {
-        tag: 'action',
-        actions: [
+        tag: 'note',
+        elements: [
           {
-            tag: 'button',
-            text: {
-              tag: 'plain_text',
-              content: '🔄 重试',
-            },
-            type: 'primary',
-            value: { action: 'retry' },
+            tag: 'plain_text',
+            content: '💡 请稍后重试，或发送 /new 开始新对话',
           },
         ],
       },
