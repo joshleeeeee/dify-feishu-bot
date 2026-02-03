@@ -1,0 +1,11 @@
+{
+  "feishu": {
+    "appId": "",
+    "appSecret": ""
+  },
+  "dify": {
+    "baseUrl": "http://localhost/v1",
+    "apiKey": ""
+  },
+  "agents": []
+}
