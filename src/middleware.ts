@@ -43,9 +43,14 @@ export function middleware(request: NextRequest) {
       const response = NextResponse.redirect(
         new URL(pathname, request.url)
       );
+      
+      // 生产环境下默认不强制 secure，除非配置了 HTTPS
+      // 这解决了直接通过 IP (HTTP) 访问 Docker 容器时无法保存 Cookie 的问题
+      const useSecureCookie = process.env.USE_SECURE_COOKIE === 'true';
+      
       response.cookies.set(COOKIE_NAME, effectiveToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
+        secure: useSecureCookie,
         sameSite: 'lax',
         maxAge: 60 * 60 * 24 * 7, // 7 days
         path: '/',
