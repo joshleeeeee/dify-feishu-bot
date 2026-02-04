@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-const ADMIN_TOKEN = process.env.ADMIN_TOKEN || 'default-token';
 const COOKIE_NAME = 'admin_token';
 
 export function middleware(request: NextRequest) {
+  // ⚠️ 关键修改：在函数内部读取环境变量，确保是运行时获取而非构建时固化
+  const ADMIN_TOKEN = process.env.ADMIN_TOKEN;
   const { pathname } = request.nextUrl;
 
   // 只保护 /admin 路径
@@ -12,18 +13,37 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // 调试日志：帮助用户排查环境变量是否正确加载
+  console.log(`[Middleware] Accessing ${pathname}`);
+  if (!ADMIN_TOKEN) {
+    console.error('[Middleware] ⚠️ ERROR: ADMIN_TOKEN environment variable is NOT set!');
+  } else {
+    // 只打印前3位，避免泄露
+    console.log(`[Middleware] Server Token: ${ADMIN_TOKEN.substring(0, 3)}***`);
+  }
+
+  // 如果没有设置 Token，为了安全也通过（或者你可以选择拦截，这里保持原有逻辑变体：如果有Token才检查）
+  // 但原逻辑是 const ADMIN_TOKEN = process.env.ADMIN_TOKEN || 'default-token';
+  // 我们保持这个逻辑，但要在日志里警告
+  const effectiveToken = ADMIN_TOKEN || 'default-token';
+  
+  if (effectiveToken === 'default-token') {
+    console.warn('[Middleware] ⚠️ WARNING: Using default token. Please set ADMIN_TOKEN in .env');
+  }
+
   // 检查 URL token
   const urlToken = request.nextUrl.searchParams.get('token');
   const cookieToken = request.cookies.get(COOKIE_NAME)?.value;
 
   // URL token 正确
-  if (urlToken === ADMIN_TOKEN) {
+  if (urlToken === effectiveToken) {
     // 如果 cookie 还没设置，设置它并重定向（去掉 URL 中的 token）
-    if (cookieToken !== ADMIN_TOKEN) {
+    if (cookieToken !== effectiveToken) {
+      console.log('[Middleware] URL token valid, setting cookie...');
       const response = NextResponse.redirect(
         new URL(pathname, request.url)
       );
-      response.cookies.set(COOKIE_NAME, ADMIN_TOKEN, {
+      response.cookies.set(COOKIE_NAME, effectiveToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
@@ -36,9 +56,11 @@ export function middleware(request: NextRequest) {
   }
 
   // Cookie token 正确
-  if (cookieToken === ADMIN_TOKEN) {
+  if (cookieToken === effectiveToken) {
     return NextResponse.next();
   }
+
+  console.log('[Middleware] ⛔ Access Denied. UrlToken:', urlToken ? 'Provided' : 'Missing', 'CookieToken:', cookieToken ? 'Provided' : 'Missing');
 
   // 未授权 - 返回 401 页面
   return new NextResponse(
