@@ -263,18 +263,41 @@ pm2 stop dify-feishu-bot
 
 ### Using Docker
 
+#### Option 1: Using Docker Compose (Recommended)
+
+```bash
+# 1. Copy environment configuration
+cp .env.example .env
+# Edit .env to set your ADMIN_TOKEN
+
+# 2. Start the service
+docker-compose up -d
+
+# 3. Initialize database
+docker-compose exec dify-feishu-bot npx prisma db push
+
+# 4. View logs
+docker-compose logs -f
+```
+
+#### Option 2: Manual Build
+
 ```bash
 # Build image
 docker build -t dify-feishu-bot .
 
 # Run container
 docker run -d \
+  --name dify-feishu-bot \
   -p 3000:3000 \
-  -e ADMIN_TOKEN=your-token \
+  -e ADMIN_TOKEN=your-secure-token \
   -v $(pwd)/config:/app/config \
   -v $(pwd)/prisma:/app/prisma \
+  --restart unless-stopped \
   dify-feishu-bot
 ```
+
+> 💡 **Tip**: Configuration and database files are persisted via volume mounts, so data survives container restarts.
 
 ---
 

@@ -1,0 +1,21 @@
+services:
+  dify-feishu-bot:
+    build: .
+    container_name: dify-feishu-bot
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - ADMIN_TOKEN=${ADMIN_TOKEN:-change-this-to-your-secure-token}
+      - DATABASE_URL=file:/app/prisma/prod.db
+    volumes:
+      # 持久化配置文件
+      - ./config:/app/config
+      # 持久化数据库
+      - ./prisma:/app/prisma
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s

@@ -263,18 +263,41 @@ pm2 stop dify-feishu-bot
 
 ### 使用 Docker 部署
 
+#### 方式一：使用 Docker Compose（推荐）
+
+```bash
+# 1. 复制环境变量配置
+cp .env.example .env
+# 编辑 .env 设置你的 ADMIN_TOKEN
+
+# 2. 启动服务
+docker-compose up -d
+
+# 3. 初始化数据库
+docker-compose exec dify-feishu-bot npx prisma db push
+
+# 4. 查看日志
+docker-compose logs -f
+```
+
+#### 方式二：手动构建运行
+
 ```bash
 # 构建镜像
 docker build -t dify-feishu-bot .
 
 # 运行容器
 docker run -d \
+  --name dify-feishu-bot \
   -p 3000:3000 \
-  -e ADMIN_TOKEN=your-token \
+  -e ADMIN_TOKEN=your-secure-token \
   -v $(pwd)/config:/app/config \
   -v $(pwd)/prisma:/app/prisma \
+  --restart unless-stopped \
   dify-feishu-bot
 ```
+
+> 💡 **提示**: 配置和数据库文件通过 volume 挂载实现持久化，重启容器不会丢失数据。
 
 ---
 
