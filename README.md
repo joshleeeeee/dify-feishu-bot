@@ -246,12 +246,20 @@ dify-feishu-bot/
 # 构建
 npm run build
 
-# 使用 PM2 启动
-pm2 start npm --name "dify-feishu-bot" -- start
+# 使用 PM2 启动（必须使用配置文件来加载 .env 环境变量）
+pm2 start ecosystem.config.js
 
 # 查看日志
 pm2 logs dify-feishu-bot
+
+# 重启服务
+pm2 restart dify-feishu-bot
+
+# 停止服务
+pm2 stop dify-feishu-bot
 ```
+
+> ⚠️ **重要**: PM2 默认不会加载 `.env` 文件！必须使用 `ecosystem.config.js` 启动，否则 `ADMIN_TOKEN` 等环境变量不会生效。
 
 ### 使用 Docker 部署
 

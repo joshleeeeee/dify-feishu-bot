@@ -246,12 +246,20 @@ dify-feishu-bot/
 # Build
 npm run build
 
-# Start with PM2
-pm2 start npm --name "dify-feishu-bot" -- start
+# Start with PM2 (must use config file to load .env variables)
+pm2 start ecosystem.config.js
 
 # View logs
 pm2 logs dify-feishu-bot
+
+# Restart service
+pm2 restart dify-feishu-bot
+
+# Stop service
+pm2 stop dify-feishu-bot
 ```
+
+> ⚠️ **Important**: PM2 does NOT load `.env` files by default! You must use `ecosystem.config.js` to start, otherwise environment variables like `ADMIN_TOKEN` will not take effect.
 
 ### Using Docker
 
