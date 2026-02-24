@@ -22,6 +22,8 @@ export interface AppConfig {
   dify: {
     baseUrl: string;
     apiKey: string; // 默认的 API Key
+    consoleEmail?: string; // Dify 控制台登录邮箱（用于自动同步）
+    consolePassword?: string; // Dify 控制台登录密码（用于自动同步）
   };
   agents: AgentConfig[];
 }
@@ -35,6 +37,8 @@ const defaultConfig: AppConfig = {
   dify: {
     baseUrl: '',
     apiKey: '',
+    consoleEmail: '',
+    consolePassword: '',
   },
   agents: [],
 };

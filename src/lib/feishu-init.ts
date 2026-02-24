@@ -2,6 +2,7 @@
 // 这个文件会在服务启动时被加载，自动建立长连接
 
 import { startFeishuWebSocket, getWebSocketStatus } from './feishu';
+import { startAutoSync } from './dify-sync';
 
 let initialized = false;
 
@@ -17,6 +18,13 @@ export function initializeFeishuConnection() {
     initialized = true;
   } catch (error) {
     console.error('飞书连接初始化失败:', error);
+  }
+
+  // 同时启动 Dify 自动同步
+  try {
+    startAutoSync();
+  } catch (error) {
+    console.error('Dify 自动同步初始化失败:', error);
   }
 
   return getWebSocketStatus();

@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateApiAuth } from '@/lib/auth';
+
+export const dynamic = 'force-dynamic';
 import { 
   getAgents, 
   addAgent, 
