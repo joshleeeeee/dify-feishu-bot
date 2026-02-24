@@ -5,7 +5,8 @@ import {
   createConversation, 
   updateConversation, 
   closeUserConversations,
-  saveMessage 
+  saveMessage,
+  getConversationMessages
 } from './db';
 import { sendChatMessage } from './dify';
 import { 
@@ -172,6 +173,31 @@ async function handleUserMessage(data: {
   
   if (lowerText === '/help' || text === '帮助') {
     await sendCard(buildHelpCard());
+    return;
+  }
+
+  if (lowerText === '/status' || text === '状态' || text === '上下文') {
+    const conversation = await getActiveConversation(openId);
+    if (!conversation) {
+      await sendMarkdown('当前没有活跃的会话。请发送消息开始新对话，或使用 **/agent** 选择智能体。');
+      return;
+    }
+
+    const messages = await getConversationMessages(conversation.id, 5000);
+    const agent = getAgent(conversation.agentId);
+
+    const totalChars = messages.reduce((sum, msg) => sum + msg.content.length, 0);
+    const userMsgCount = messages.filter(m => m.role === 'user').length;
+    const aiMsgCount = messages.filter(m => m.role === 'assistant').length;
+
+    let statusText = `📊 **当前会话上下文状态**\n\n`;
+    statusText += `**当前智能体:** ${agent?.name || '未知'}\n`;
+    statusText += `**总消息数:** ${messages.length} 条 (用户: ${userMsgCount}, 助手: ${aiMsgCount})\n`;
+    statusText += `**上下文字符容量:** 约 ${totalChars} 字符\n`;
+    statusText += `**最后活跃时间:** ${conversation.lastActiveAt ? new Date(conversation.lastActiveAt).toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' }) : '未知'}\n\n`;
+    statusText += `> 💡 提示：大语言模型通常有一定的上下文窗口限制。如果您感觉回复逐渐变慢，或开始偏离主题、忘记最早的设定，意味着上下文可能已经超载。随时可以使用 **/new** 开启全新的对话来清理记忆！`;
+
+    await sendMarkdown(statusText);
     return;
   }
 
