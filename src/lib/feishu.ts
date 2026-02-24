@@ -256,13 +256,16 @@ async function handleUserMessage(data: {
       });
     }
 
+    // 移除可能存在的 <think> 标签及其内容
+    const finalAnswer = response.answer.replace(/<think>[\s\S]*?<\/think>\n?/g, '').trim();
+
     await saveMessage({
       conversationId: conversation.id,
       role: 'assistant',
-      content: response.answer,
+      content: finalAnswer,
     });
 
-    await sendMarkdown(response.answer);
+    await sendMarkdown(finalAnswer);
     
   } catch (error) {
     console.error('Error handling message:', error);
