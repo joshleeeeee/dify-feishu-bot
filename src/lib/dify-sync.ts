@@ -20,13 +20,32 @@ interface DifyApiKey {
 
 // 登录 Dify 获取认证信息
 async function loginDify(consoleBase: string, email: string, password: string) {
-  const res = await fetch(`${consoleBase}/console/api/login`, {
+  const encodedPassword = Buffer.from(password).toString('base64');
+  
+  let res = await fetch(`${consoleBase}/console/api/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password }),
+    body: JSON.stringify({ email, password: encodedPassword }),
   });
 
-  if (!res.ok) {
+  // 兼容老版本 Dify（不要求 base64 编码密码的情况）
+  if (!res.ok && res.status === 401) {
+    const errorText = await res.text();
+    if (!errorText.includes('Invalid encrypted data')) {
+      const fallbackRes = await fetch(`${consoleBase}/console/api/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+      if (fallbackRes.ok) {
+        res = fallbackRes;
+      } else {
+        throw new Error(`Dify 登录失败: ${fallbackRes.status}`);
+      }
+    } else {
+      throw new Error(`Dify 登录失败: ${res.status}`);
+    }
+  } else if (!res.ok) {
     throw new Error(`Dify 登录失败: ${res.status}`);
   }
 
