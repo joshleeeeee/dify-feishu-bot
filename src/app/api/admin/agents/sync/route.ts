@@ -28,16 +28,37 @@ async function loginDify(difyBaseUrl: string, email: string, password: string) {
   // difyBaseUrl 是类似 http://localhost/v1 的应用 API 地址
   // Console API 在根域名的 /console/api 下
   const consoleBase = difyBaseUrl.replace(/\/v1$/, '').replace(/\/api$/, '');
+  // 新版本的 Dify Console API 要求密码进行 Base64 编码
+  const encodedPassword = Buffer.from(password).toString('base64');
   
-  const res = await fetch(`${consoleBase}/console/api/login`, {
+  let res = await fetch(`${consoleBase}/console/api/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password }),
+    body: JSON.stringify({ email, password: encodedPassword }),
   });
 
-  if (!res.ok) {
-    const error = await res.text();
-    throw new Error(`Dify 登录失败: ${res.status} - ${error}`);
+  // 兼容老版本 Dify（不要求 base64 编码密码的情况）
+  if (!res.ok && res.status === 401) {
+    const errorText = await res.text();
+    // 如果返回的仅仅是普通的邮箱或者密码错误，则尝试使用明文回退，以防这是老版本 Dify
+    // （新版本发现未加密通常返回 'Invalid encrypted data'，说明只要不是这个，或者密码直接验证失败，可以尝试明文）
+    if (!errorText.includes('Invalid encrypted data')) {
+      const fallbackRes = await fetch(`${consoleBase}/console/api/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+      if (fallbackRes.ok) {
+        res = fallbackRes;
+      } else {
+        throw new Error(`Dify 登录失败: ${fallbackRes.status} - ${await fallbackRes.text()}`);
+      }
+    } else {
+      throw new Error(`Dify 登录失败: ${res.status} - ${errorText}`);
+    }
+  } else if (!res.ok) {
+    const errorText = await res.text();
+    throw new Error(`Dify 登录失败: ${res.status} - ${errorText}`);
   }
 
   // 从 Set-Cookie 头中提取 token
