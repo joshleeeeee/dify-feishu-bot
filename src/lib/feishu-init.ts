@@ -4,6 +4,32 @@
 import { startFeishuWebSocket, getWebSocketStatus } from './feishu';
 import { startAutoSync } from './dify-sync';
 
+// 给所有的控制台输出加上时间戳前缀
+const originalLog = console.log;
+const originalError = console.error;
+const originalWarn = console.warn;
+const originalInfo = console.info;
+
+function getFormattedTime() {
+  const d = new Date();
+  // 简易的 YYYY-MM-DD HH:mm:ss 格式
+  const pad = (n: number) => n.toString().padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+}
+
+console.log = function (...args) {
+  originalLog(`[${getFormattedTime()}]`, ...args);
+};
+console.error = function (...args) {
+  originalError(`[${getFormattedTime()}]`, ...args);
+};
+console.warn = function (...args) {
+  originalWarn(`[${getFormattedTime()}]`, ...args);
+};
+console.info = function (...args) {
+  originalInfo(`[${getFormattedTime()}]`, ...args);
+};
+
 let initialized = false;
 
 export function initializeFeishuConnection() {
