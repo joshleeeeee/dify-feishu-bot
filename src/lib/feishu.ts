@@ -123,11 +123,33 @@ async function handleUserMessage(data: {
         },
       ],
     };
-    await client.im.message.create({
+    const res = await client.im.message.create({
       params: { receive_id_type: 'open_id' },
       data: {
         receive_id: openId,
         msg_type: 'interactive',
+        content: JSON.stringify(card),
+      },
+    });
+    return res.data?.message_id;
+  };
+
+  // 更新已发送的 Markdown 消息
+  const updateMarkdown = async (messageId: string, content: string) => {
+    const card = {
+      config: {
+        wide_screen_mode: true,
+      },
+      elements: [
+        {
+          tag: 'markdown',
+          content: content,
+        },
+      ],
+    };
+    await client.im.message.patch({
+      path: { message_id: messageId },
+      data: {
         content: JSON.stringify(card),
       },
     });
@@ -203,6 +225,7 @@ async function handleUserMessage(data: {
   }
 
   // 普通对话消息
+  let waitingMsgId: string | undefined;
   try {
     let conversation = await getActiveConversation(openId);
     
@@ -238,6 +261,8 @@ async function handleUserMessage(data: {
       content: text,
     });
 
+    waitingMsgId = await sendMarkdown('⏳ 正在思考中...');
+
     const response = await sendChatMessage({
       query: text,
       userId: openId,
@@ -265,12 +290,20 @@ async function handleUserMessage(data: {
       content: finalAnswer,
     });
 
-    await sendMarkdown(finalAnswer);
+    if (waitingMsgId) {
+      await updateMarkdown(waitingMsgId, finalAnswer);
+    } else {
+      await sendMarkdown(finalAnswer);
+    }
     
   } catch (error) {
     console.error('Error handling message:', error);
     const errorMessage = error instanceof Error ? error.message : '处理消息时出错';
-    await sendMarkdown(`❌ ${errorMessage}`);
+    if (waitingMsgId) {
+      await updateMarkdown(waitingMsgId, `❌ ${errorMessage}`);
+    } else {
+      await sendMarkdown(`❌ ${errorMessage}`);
+    }
   }
 }
 
